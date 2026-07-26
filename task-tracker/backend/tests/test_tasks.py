@@ -141,6 +141,44 @@ def test_patch_invalid_transition_todo_to_done_returns_422(client, created_task)
     assert "Invalid status transition" in response.json()["detail"]
 
 
+def test_patch_unsupported_priority_returns_422(client):
+    create_response = client.post("/tasks", json={"title": "Task with invalid priority"})
+
+    assert create_response.status_code == 201
+    task_id = create_response.json()["id"]
+
+    response = client.patch(f"/tasks/{task_id}", json={"priority": "Urgent"})
+
+    assert response.status_code == 422
+    assert response.json()["detail"]
+    assert any("priority" in str(error.get("loc", [])) for error in response.json()["detail"])
+
+
+def test_patch_inprogress_to_done_returns_200(client):
+    create_response = client.post("/tasks", json={"title": "Task to complete"})
+
+    assert create_response.status_code == 201
+    task_id = create_response.json()["id"]
+
+    client.patch(f"/tasks/{task_id}", json={"status": "InProgress"})
+    response = client.patch(f"/tasks/{task_id}", json={"status": "Done"})
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "Done"
+
+
+def test_patch_empty_json_object_returns_422(client):
+    create_response = client.post("/tasks", json={"title": "Task with empty patch"})
+
+    assert create_response.status_code == 201
+    task_id = create_response.json()["id"]
+
+    response = client.patch(f"/tasks/{task_id}", json={})
+
+    assert response.status_code == 422
+    assert response.json()["detail"]
+
+
 def test_patch_same_status_returns_422(client, created_task):
     task_id = created_task["id"]
 

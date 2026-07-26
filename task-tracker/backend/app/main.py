@@ -41,8 +41,10 @@ def create_task(payload: TaskCreate) -> TaskResponse:
 def list_tasks(
     status: TaskStatus | None = None,
     priority: TaskPriority | None = None,
+    overdue: bool | None = None,
+    tag: str | None = None,
 ) -> list[TaskResponse]:
-    return storage.get_all_tasks(status=status, priority=priority)
+    return storage.get_all_tasks(status=status, priority=priority, overdue=overdue, tag=tag)
 
 
 @app.get("/tasks/{task_id}", response_model=TaskResponse, tags=["tasks"])
@@ -55,6 +57,9 @@ def get_task(task_id: str) -> TaskResponse:
 
 @app.patch("/tasks/{task_id}", response_model=TaskResponse, tags=["tasks"])
 def update_task(task_id: str, payload: TaskUpdate) -> TaskResponse:
+    if payload.model_dump(exclude_unset=True) == {}:
+        raise HTTPException(status_code=422, detail="Update body must include at least one field")
+
     if payload.status is not None:
         existing_task = storage.get_task_by_id(task_id)
         if existing_task is None:

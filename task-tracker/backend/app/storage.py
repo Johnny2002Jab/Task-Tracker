@@ -25,12 +25,19 @@ def add_task(payload: TaskCreate) -> TaskResponse:
 def get_all_tasks(
     status: Optional[TaskResponse.__fields__["status"].annotation] = None,
     priority: Optional[TaskResponse.__fields__["priority"].annotation] = None,
+    overdue: Optional[bool] = None,
+    tag: Optional[str] = None,
 ) -> list[TaskResponse]:
     tasks = list(_tasks.values())
     if status is not None:
         tasks = [task for task in tasks if task.status == status]
     if priority is not None:
         tasks = [task for task in tasks if task.priority == priority]
+    if overdue is not None:
+        tasks = [task for task in tasks if task.is_overdue == overdue]
+    if tag is not None:
+        tag_lower = tag.lower()
+        tasks = [task for task in tasks if tag_lower in (t.lower() for t in task.tags)]
     return tasks
 
 

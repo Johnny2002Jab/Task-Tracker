@@ -109,6 +109,63 @@
         color: #6b7280;
       }
 
+      .due-date {
+        color: #6b7280;
+      }
+
+      .overdue-pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #fee2e2;
+        color: #b91c1c;
+        font-weight: 600;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .tag-chip {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #e0e7ff;
+        color: #3730a3;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding: 10px 12px;
+        background: #1f2937;
+        border-radius: 8px;
+      }
+
+      .filter-bar label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #d1d5db;
+        font-size: 0.9rem;
+      }
+
+      .filter-bar input[type="text"] {
+        border-radius: 6px;
+        border: 1px solid #374151;
+        background: #0f172a;
+        color: #f9fafb;
+        padding: 6px 10px;
+      }
+
       .edit-button,
       .action-button,
       .secondary-button {
@@ -238,6 +295,18 @@
         <button id="newTaskButton" class="action-button" type="button">New Task</button>
       </header>
 
+      <div class="filter-bar">
+        <label for="tagFilterInput">
+          Tag:
+          <input id="tagFilterInput" type="text" placeholder="e.g. backend" />
+        </label>
+        <label for="overdueFilterCheckbox">
+          <input id="overdueFilterCheckbox" type="checkbox" />
+          Overdue only
+        </label>
+        <button id="clearFiltersButton" type="button" class="secondary-button">Clear filters</button>
+      </div>
+
       <main class="board" id="board"></main>
 
       <div id="taskModalOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
@@ -281,9 +350,21 @@
               </div>
             </div>
 
+            <div class="form-row form-grid">
+              <div>
+                <label for="taskAssignee">Assignee</label>
+                <input id="taskAssignee" name="assignee" type="text" />
+              </div>
+
+              <div>
+                <label for="taskDueDate">Due date</label>
+                <input id="taskDueDate" name="due_date" type="date" />
+              </div>
+            </div>
+
             <div class="form-row">
-              <label for="taskAssignee">Assignee</label>
-              <input id="taskAssignee" name="assignee" type="text" />
+              <label for="taskTags">Tags (comma-separated)</label>
+              <input id="taskTags" name="tags" type="text" placeholder="e.g. backend, urgent" />
             </div>
 
             <div class="form-actions">
@@ -306,11 +387,16 @@
       const statusSelect = document.getElementById('taskStatus');
       const prioritySelect = document.getElementById('taskPriority');
       const assigneeInput = document.getElementById('taskAssignee');
+      const dueDateInput = document.getElementById('taskDueDate');
+      const tagsInput = document.getElementById('taskTags');
       const taskIdInput = document.getElementById('taskId');
       const titleError = document.getElementById('titleError');
       const newTaskButton = document.getElementById('newTaskButton');
       const cancelButton = document.getElementById('cancelButton');
       const closeButton = document.querySelector('.modal-close');
+      const tagFilterInput = document.getElementById('tagFilterInput');
+      const overdueFilterCheckbox = document.getElementById('overdueFilterCheckbox');
+      const clearFiltersButton = document.getElementById('clearFiltersButton');
       const baseUrl = 'http://localhost:8000';
       const columns = [
         { status: 'ToDo', label: 'To Do' },
@@ -408,7 +494,33 @@
         assignee.textContent = escapeText(task.assignee || 'Unassigned');
         metaRow.appendChild(assignee);
 
+        if (task.is_overdue) {
+          const overduePill = document.createElement('span');
+          overduePill.className = 'overdue-pill';
+          overduePill.textContent = 'Overdue';
+          metaRow.appendChild(overduePill);
+        }
+
         card.appendChild(metaRow);
+
+        if (task.due_date) {
+          const dueDateRow = document.createElement('div');
+          dueDateRow.className = 'due-date';
+          dueDateRow.textContent = `Due: ${escapeText(task.due_date)}`;
+          card.appendChild(dueDateRow);
+        }
+
+        if (task.tags && task.tags.length > 0) {
+          const tagRow = document.createElement('div');
+          tagRow.className = 'tag-row';
+          task.tags.forEach((tag) => {
+            const chip = document.createElement('span');
+            chip.className = 'tag-chip';
+            chip.textContent = escapeText(tag);
+            tagRow.appendChild(chip);
+          });
+          card.appendChild(tagRow);
+        }
 
         const actionsRow = document.createElement('div');
         actionsRow.className = 'meta-row';
@@ -428,12 +540,17 @@
         return card;
       }
 
+      let editingOriginalStatus = null;
+
       function resetModalForm() {
         taskModalForm.reset();
         taskIdInput.value = '';
         statusSelect.value = 'ToDo';
         prioritySelect.value = 'Medium';
         assigneeInput.value = '';
+        dueDateInput.value = '';
+        tagsInput.value = '';
+        editingOriginalStatus = null;
         titleInput.classList.remove('invalid');
         titleError.textContent = '';
         modalErrorBanner.textContent = '';
@@ -450,7 +567,10 @@
           statusSelect.value = task.status ?? 'ToDo';
           prioritySelect.value = task.priority ?? 'Medium';
           assigneeInput.value = task.assignee ?? '';
+          dueDateInput.value = task.due_date ?? '';
+          tagsInput.value = (task.tags ?? []).join(', ');
           taskIdInput.value = task.id;
+          editingOriginalStatus = task.status ?? 'ToDo';
         } else {
           taskModalTitle.textContent = 'New Task';
         }
@@ -500,15 +620,23 @@
           return;
         }
 
+        const taskId = taskIdInput.value;
         const payload = {
           title: titleInput.value.trim(),
           description: descriptionInput.value,
-          status: statusSelect.value,
           priority: prioritySelect.value,
           assignee: assigneeInput.value.trim() || null,
+          due_date: dueDateInput.value || null,
+          tags: tagsInput.value
+            .split(',')
+            .map((tag) => tag.trim())
+            .filter((tag) => tag.length > 0),
         };
 
-        const taskId = taskIdInput.value;
+        if (!taskId || statusSelect.value !== editingOriginalStatus) {
+          payload.status = statusSelect.value;
+        }
+
         const url = taskId ? `${baseUrl}/tasks/${taskId}` : `${baseUrl}/tasks`;
         const method = taskId ? 'PATCH' : 'POST';
 
@@ -670,8 +798,19 @@
       async function fetchTasks() {
         renderBoard([], 'loading');
 
+        const params = new URLSearchParams();
+        const tagFilterValue = tagFilterInput.value.trim();
+        if (tagFilterValue) {
+          params.set('tag', tagFilterValue);
+        }
+        if (overdueFilterCheckbox.checked) {
+          params.set('overdue', 'true');
+        }
+        const queryString = params.toString();
+        const url = queryString ? `${baseUrl}/tasks?${queryString}` : `${baseUrl}/tasks`;
+
         try {
-          const response = await fetch(`${baseUrl}/tasks`);
+          const response = await fetch(url);
           if (!response.ok) {
             throw new Error(`Request failed with status ${response.status}`);
           }
@@ -683,6 +822,14 @@
           renderBoard([], 'error');
         }
       }
+
+      tagFilterInput.addEventListener('change', () => fetchTasks());
+      overdueFilterCheckbox.addEventListener('change', () => fetchTasks());
+      clearFiltersButton.addEventListener('click', () => {
+        tagFilterInput.value = '';
+        overdueFilterCheckbox.checked = false;
+        fetchTasks();
+      });
 
       fetchTasks();
     </script>
