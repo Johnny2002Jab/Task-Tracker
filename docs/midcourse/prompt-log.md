@@ -1,8 +1,5 @@
 # Prompt Log — Mid-Course Project
 
-This log covers the AI-assisted prompts used across both features, including one weak→strong
-rewrite as required by the brief. "Accepted / edited / rejected" reflects what actually
-happened to the AI's first draft, not the final polished version.
 
 ## Weak vs. strong prompt (feature scoping)
 
@@ -16,16 +13,13 @@ tag-management UI.
 
 **Strong prompt actually used (paraphrased from this session):**
 > "Implement 'Due dates + overdue filter' and 'Tags/labels' from the mid-course brief on the
-> existing FastAPI/vanilla-JS Task Tracker. Constraints: additive fields only on the existing
-> `TaskCreate`/`TaskUpdate`/`TaskResponse` models, no database, no new routes beyond the
-> existing CRUD shape, overdue computed at read time (not stored), tags as a real
-> `list[str]` (not comma-separated), max 10 tags/30 chars each, case-insensitive dedup, a
-> `Done` task is never overdue. Write the mini-ADR and user stories before touching code."
+> existing FastAPI Task Tracker. Constraints: additive fields only on the existing
+> `TaskCreate`/`TaskUpdate`/`TaskResponse` models, no database, no new routes beyond then existing CRUD shape, overdue computed at read time (not stored), tags as a real
+> `list[str]` (not comma-separated), max 10 tags/30 chars each, case-insensitive dedup, a `Done` task is never overdue.
 
 - **Accepted:** the constraint list above became the actual `mini-adr.md` decisions.
 - **Edited:** the initial mini-ADR draft used the Module 1 P0-style long-form ADR format;
-  I asked for it to be rewritten to match the exact section structure of the project's
-  existing `ADR-001` (Status/Date header → Context → Decision → Reasoning → Consequences →
+  I asked for it to be rewritten  (Status/Date header → Context → Decision → Reasoning → Consequences →
   Implementation Notes → AI Assumptions Reviewed → Alternatives Considered) rather than a
   generic format.
 
@@ -90,4 +84,4 @@ temporary source change that should make each fail, so I can prove they're meani
 `seen_lower` dedup loop), both matched to the specific rule each test claims to protect.
 
 **Accepted as-is** — both breaks produced the expected failing assertions (see
-`verification.md` §5), confirming the tests are real rather than vacuously passing.
+`verification.md`), confirming the tests are real rather than vacuously passing.
