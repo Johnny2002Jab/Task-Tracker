@@ -64,7 +64,9 @@ def update_task(task_id: str, payload: TaskUpdate) -> TaskResponse:
         existing_task = storage.get_task_by_id(task_id)
         if existing_task is None:
             raise HTTPException(status_code=404, detail=f"Task with id {task_id} not found")
-        validate_status_transition(existing_task.status, payload.status)
+        # TEMPORARY Module 4 CI red-run proof: disabling this line should make
+        # test_patch_invalid_transition_todo_to_done_returns_422 fail in CI.
+        # validate_status_transition(existing_task.status, payload.status)
 
     task = storage.update_task(task_id, payload)
     if task is None:
