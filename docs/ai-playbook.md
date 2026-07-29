@@ -1,10 +1,11 @@
 <!--
-DRAFT NOTICE: This playbook was drafted by Claude Code from real evidence in this project's
-session history (see docs/module5/governance-worksheet.md and the CI/security-review work it
-cites). Module 5 is explicit that a playbook filled in by the AI isn't really a playbook — the
-rules below are evidence-backed, not generic, but they still need to be read, argued with, and
-rewritten in your own words before they're actually yours. Treat this as the structured draft the
-lecture describes, not the final artifact.
+NOTICE: This playbook was drafted by Claude Code from real evidence across this project's
+session history (mid-course through the Final Project — see docs/module5/governance-worksheet.md
+and docs/final-ai-review.md). Module 5 is explicit that a playbook filled in by the AI isn't
+really a playbook — the rules below are evidence-backed, not generic, but they still need to be
+read, argued with, and rewritten in your own words before they're actually yours. Revised once
+more at Final Project completion (see the last bullet under "What I am still figuring out"), but
+still a draft for you to personalize, not a finished artifact.
 -->
 
 # Personal AI Playbook
@@ -68,6 +69,11 @@ lecture describes, not the final artifact.
 - Whether "record AI contributions in the commit/doc" (rule 3 in `docs/ai-usage.md`) is enough on
   its own to prevent a corrected mistake from quietly reverting, or whether that needs a test that
   actively guards the corrected behavior too.
+- The Docker build has now gone undocumented-as-unverified across three separate checkpoints
+  (Module 4, Module 5, Final Project) without ever actually being resolved — each time it was
+  honestly flagged rather than glossed over, which is the right short-term call, but three
+  checkpoints is long enough that "flag it honestly" has become a substitute for "get access to
+  Docker and actually check." That's worth noticing about my own pattern, not just the project's.
 
 ## Decision Card
 
