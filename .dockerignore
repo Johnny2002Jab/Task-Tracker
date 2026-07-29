@@ -1,0 +1,15 @@
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+task-tracker/backend/venv/
+task-tracker/backend/.venv/
+task-tracker/backend/.env
+.env
+.git/
+.github/
+venv/
+docs/
+*.log
+push_to_github.ps1
+CLAUDE.md
+README.md
