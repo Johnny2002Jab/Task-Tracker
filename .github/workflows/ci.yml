@@ -27,4 +27,13 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
-        run: pytest -v
+        run: |
+          set +e
+          pytest -v 2>&1 | tee pytest_output.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            while IFS= read -r line; do
+              echo "::error::$line"
+            done < pytest_output.log
+          fi
+          exit $status
