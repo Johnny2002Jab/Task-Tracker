@@ -73,3 +73,10 @@ a failing test fails the workflow.
   technical decision note (Module 4): why storage is still an in-memory dict, not a database
 - [docs/module4/](docs/module4/) — Module 4 evidence: documentation claim-vs-reality audit and
   AI-assisted code review log
+- [AGENTS.md](AGENTS.md) — repo guardrails for agentic AI tools (Module 5)
+- [docs/module5/](docs/module5/) — Module 5 evidence: security review, governance worksheet,
+  comments-feature planning comparison, and context-engineering comparison
+- [docs/decisions/comments-feature-plan.md](docs/decisions/comments-feature-plan.md) — planning
+  only, not implemented (Module 5)
+- [docs/architecture.md](docs/architecture.md) — system architecture overview (Module 5)
+- [docs/ai-playbook.md](docs/ai-playbook.md) — personal AI usage playbook (Module 5)
