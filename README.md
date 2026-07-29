@@ -40,9 +40,36 @@ cd task-tracker/backend
 venv\Scripts\python.exe -m pytest tests/ -v
 ```
 
+## Run with Docker
+
+```bash
+docker build -t task-tracker:dev .
+docker run --rm -d -p 8000:8000 --name tt-dev task-tracker:dev
+curl -i http://localhost:8000/health
+docker exec tt-dev whoami   # expect "app", not "root"
+docker stop tt-dev
+```
+
+The image is a multi-stage build (`Dockerfile`) with a `python:3.13-slim` runtime, a non-root
+`app` user, and no `.env`/secrets copied in (see `.dockerignore`). It serves the backend only —
+the frontend is still served separately as a static file (see above).
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs the full pytest suite on every push and on pull requests to
+`main`, using the same `python -m pytest -v` command as the local test instructions above, on a
+pinned Python 3.13. No `continue-on-error`, `|| true`, or similar failure-swallowing shortcuts —
+a failing test fails the workflow.
+
 ## Project docs
 
 - [task-tracker/backend/README.md](task-tracker/backend/README.md) — backend-specific setup notes
+- [CLAUDE.md](CLAUDE.md) — project memory for Claude Code sessions: stack, commands, business
+  rules, and do-not boundaries
 - [docs/midcourse/](docs/midcourse/) — mid-course checkpoint deliverables: user stories,
   mini-ADR, prompt log, verification log, and reflection for the due-dates/overdue and
   tags/labels features
+- [docs/decisions/in-memory-task-storage.md](docs/decisions/in-memory-task-storage.md) —
+  technical decision note (Module 4): why storage is still an in-memory dict, not a database
+- [docs/module4/](docs/module4/) — Module 4 evidence: documentation claim-vs-reality audit and
+  AI-assisted code review log
