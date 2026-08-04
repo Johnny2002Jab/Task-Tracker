@@ -52,7 +52,10 @@ the same build/run/health/whoami sequence was added as a real job (`docker`) in
 preinstalled, so it actually executes there instead of only being authored to the right shape.
 
 - Docker CI job: `.github/workflows/ci.yml`, job `docker` (depends on `test` passing first)
-- Latest run: [fill in the Actions run URL after this push] — status: [fill in]
+- Latest run: https://github.com/Johnny2002Jab/Task-Tracker/actions/runs/30908665181 (commit
+  `2e7068b`, branch `final-project`) — **both jobs succeeded**: `test` in 19s, `docker` in 18s. The
+  `docker` job's cleanup step (`docker stop`) is the only one with `continue-on-error`; the build,
+  run, `/health` poll, and non-root check all had to pass for the job itself to report success.
 - What it verifies, on a real container, on every push/PR: image builds, container starts, `/health`
   returns 200 within 15s (polled), `docker exec ... whoami` returns `app` (non-root)
 - This does not replace running it on your own machine before a real release — it proves the image

@@ -69,11 +69,16 @@ still a draft for you to personalize, not a finished artifact.
 - Whether "record AI contributions in the commit/doc" (rule 3 in `docs/ai-usage.md`) is enough on
   its own to prevent a corrected mistake from quietly reverting, or whether that needs a test that
   actively guards the corrected behavior too.
-- The Docker build has now gone undocumented-as-unverified across three separate checkpoints
-  (Module 4, Module 5, Final Project) without ever actually being resolved — each time it was
-  honestly flagged rather than glossed over, which is the right short-term call, but three
-  checkpoints is long enough that "flag it honestly" has become a substitute for "get access to
-  Docker and actually check." That's worth noticing about my own pattern, not just the project's.
+- The Docker build went undocumented-as-unverified across three separate checkpoints (Module 4,
+  Module 5, Final Project) before it was actually resolved — each time it was honestly flagged
+  rather than glossed over, which was the right short-term call, but three checkpoints is long
+  enough that "flag it honestly" had become a substitute for "get access to Docker and actually
+  check." What finally closed it wasn't installing Docker (still not available in this
+  environment) but noticing that GitHub's own runners already have it: a `docker` job in CI now
+  builds, runs, and health/non-root-checks the image for real on every push. The lesson worth
+  keeping: when a checkpoint keeps re-flagging the same "still figuring out" item instead of
+  resolving it, look for a different environment that already has the missing tool before treating
+  the flag as sufficient.
 
 ## Decision Card
 
