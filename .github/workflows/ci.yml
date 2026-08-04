@@ -28,3 +28,39 @@ jobs:
 
       - name: Run tests
         run: python -m pytest -v
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t task-tracker:ci .
+
+      - name: Run container
+        run: docker run -d --rm -p 8000:8000 --name tt-ci task-tracker:ci
+
+      - name: Wait for /health to return 200
+        run: |
+          for i in $(seq 1 15); do
+            if curl -sf http://localhost:8000/health; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "container did not become healthy within 15s" >&2
+          docker logs tt-ci
+          exit 1
+
+      - name: Verify container runs as non-root
+        run: |
+          user=$(docker exec tt-ci whoami)
+          echo "container user: $user"
+          test "$user" = "app"
+
+      - name: Stop container
+        if: always()
+        continue-on-error: true
+        run: docker stop tt-ci

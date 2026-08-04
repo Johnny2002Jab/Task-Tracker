@@ -42,13 +42,23 @@
   `task-tracker/backend/app`, never a broad `COPY . .`, so nothing outside those two paths could
   end up in the image regardless of `.dockerignore`.
 
-**Status: NOT independently verified in this environment.** There is no Docker daemon available
-here (`docker --version` → `command not found`), so the build/run/health/whoami sequence above has
-never actually been executed — only authored to the required shape (multi-stage, `python:3.13-slim`
-runtime, `USER app` before `CMD`, no secrets copied). This is stated plainly rather than implied as
-done; see `docs/module4/claim-vs-reality.md` for the same caveat recorded earlier. **Action for
-you:** run the four commands above locally (with Docker installed) and update this section with
-the real output before treating Docker as verified.
+**Local status: genuinely unavailable, not just unverified.** This dev environment has no Docker
+daemon and no Docker Desktop install at all (`docker --version` → command not found, and
+`Test-Path "C:\Program Files\Docker\Docker\Docker Desktop.exe"` → `False`), so the four commands
+above have never been run by hand here. Rather than leave that as an open item indefinitely (as it
+was through Module 4 and Module 5 — see `docs/ai-playbook.md`, "What I am still figuring out"),
+the same build/run/health/whoami sequence was added as a real job (`docker`) in
+`.github/workflows/ci.yml`, which runs on GitHub's `ubuntu-latest` runners — these ship Docker
+preinstalled, so it actually executes there instead of only being authored to the right shape.
+
+- Docker CI job: `.github/workflows/ci.yml`, job `docker` (depends on `test` passing first)
+- Latest run: [fill in the Actions run URL after this push] — status: [fill in]
+- What it verifies, on a real container, on every push/PR: image builds, container starts, `/health`
+  returns 200 within 15s (polled), `docker exec ... whoami` returns `app` (non-root)
+- This does not replace running it on your own machine before a real release — it proves the image
+  is genuinely buildable and runnable by *someone*, not that it works on any specific developer's
+  Windows/Docker Desktop setup. If you have Docker installed locally, still run the four commands
+  above once and confirm the same result.
 
 ## Documentation claim-vs-reality log
 
