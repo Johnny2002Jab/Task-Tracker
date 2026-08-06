@@ -12,12 +12,14 @@ guardrails below apply regardless of which agent is reading this file.
 ## Stack and commands
 
 - Backend: Python 3.13, FastAPI 0.115.0, Pydantic v2, Uvicorn, in-memory storage. No database.
-- Install: `cd task-tracker/backend && pip install -r requirements.txt`
-- Run: `uvicorn app.main:app --reload --port 8000` (from `task-tracker/backend/`)
-- Test: `python -m pytest -v` (from `task-tracker/backend/`) — **must** use `python -m pytest`,
-  not bare `pytest`; see `docs/module4/claim-vs-reality.md` for why the bare form breaks on Linux.
-- Frontend: static file, `python -m http.server 5500` from `task-tracker/frontend/`, then open
-  `index.html`. No build step, no framework.
+- Install: `pip install -r requirements.txt` (from the repo root)
+- Run: `uvicorn app.main:app --reload --port 8000` (from the repo root)
+- Test: `python -m pytest -v` (from the repo root) — **must** use `python -m pytest`, not bare
+  `pytest`; see `docs/module4/claim-vs-reality.md` for why the bare form breaks on Linux.
+- Frontend: static file, `python -m http.server 5500` from `frontend/`, then open `index.html`.
+  No build step, no framework.
+- `app/`, `tests/`, `frontend/` are top-level directories (not nested under `task-tracker/`) —
+  moved there after grading feedback flagged the nested layout as non-standard.
 - CI: `.github/workflows/ci.yml`, runs the test command above on push/PR.
 - Docker: `Dockerfile` + `.dockerignore` at repo root (multi-stage, non-root `app` user).
 

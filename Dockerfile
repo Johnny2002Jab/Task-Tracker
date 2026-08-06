@@ -3,7 +3,7 @@ FROM python:3.13-slim AS builder
 
 WORKDIR /build
 
-COPY task-tracker/backend/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # Runtime stage: slim image, only what's needed to run the app
@@ -14,7 +14,7 @@ RUN useradd --create-home --shell /usr/sbin/nologin app
 WORKDIR /app
 
 COPY --from=builder /install /usr/local
-COPY task-tracker/backend/app ./app
+COPY app ./app
 
 RUN chown -R app:app /app
 

@@ -9,7 +9,7 @@ system-level framing where C had no visibility (frontend, tests, CI).
 ## System overview
 
 A FastAPI Task Tracker backend (in-memory storage, no database) paired with a single-file vanilla
-JS/HTML/CSS Kanban frontend (`task-tracker/frontend/index.html`). No authentication, no
+JS/HTML/CSS Kanban frontend (`frontend/index.html`). No authentication, no
 persistence beyond process lifetime — see `docs/decisions/in-memory-task-storage.md` for why.
 
 ## Backend structure

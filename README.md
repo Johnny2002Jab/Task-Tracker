@@ -14,16 +14,18 @@ Branch reviewed: `final-project`
   product features were added on this branch.
 - CI runs the pytest suite on push and pull request (see `.github/workflows/ci.yml`), with a full
   green → intentional red → restored green proof already on this branch's history (Module 4).
-- A Docker image is authored (multi-stage, non-root) but **not build/run-verified** in this
-  environment — no Docker daemon was available. See `docs/release-evidence.md` for exactly what
-  was and wasn't checked.
+- A Docker image is authored (multi-stage, non-root) and build/run/health-verified via a dedicated
+  `docker` job in CI (no Docker daemon is available in the local dev environment, so this runs on
+  GitHub's runner instead — see `docs/release-evidence.md` for the real run link).
 - AI review, security, and ownership evidence is in `docs/final-ai-review.md`, `docs/module4/`,
   and `docs/module5/`.
+- Repo layout is now the flat, required top-level shape: `app/`, `frontend/`, `tests/` at the repo
+  root (moved from `task-tracker/backend/` and `task-tracker/frontend/` after grading feedback
+  flagged the nested structure — CI and Docker paths were updated to match, not just the docs).
 
 ### How to run locally
 
 ```bash
-cd task-tracker/backend
 python -m venv venv        # first time only
 venv\Scripts\Activate.ps1  # Windows PowerShell; use `source venv/bin/activate` on macOS/Linux
 pip install -r requirements.txt
@@ -33,7 +35,6 @@ uvicorn app.main:app --reload --port 8000
 ### How to run tests
 
 ```bash
-cd task-tracker/backend
 python -m pytest -v
 ```
 
@@ -70,7 +71,6 @@ the rule strict (full story in `docs/final-ai-review.md`).
 ## Run the backend
 
 ```bash
-cd task-tracker/backend
 python -m venv venv        # first time only
 venv\Scripts\Activate.ps1  # Windows PowerShell; use `source venv/bin/activate` on macOS/Linux
 pip install -r requirements.txt
@@ -90,7 +90,7 @@ must be served (not opened via `file://`) from an origin the backend's CORS conf
 (`http://localhost:5500`, `http://127.0.0.1:5500`, or `http://localhost:5173`):
 
 ```bash
-cd task-tracker/frontend
+cd frontend
 python -m http.server 5500
 ```
 
@@ -99,7 +99,6 @@ Then open http://localhost:5500/index.html in a browser, with the backend alread
 ## Run the tests
 
 ```bash
-cd task-tracker/backend
 venv\Scripts\python.exe -m pytest tests/ -v
 ```
 
@@ -126,7 +125,6 @@ a failing test fails the workflow.
 
 ## Project docs
 
-- [task-tracker/backend/README.md](task-tracker/backend/README.md) — backend-specific setup notes
 - [CLAUDE.md](CLAUDE.md) — project memory for Claude Code sessions: stack, commands, business
   rules, and do-not boundaries
 - [docs/midcourse/](docs/midcourse/) — mid-course checkpoint deliverables: user stories,

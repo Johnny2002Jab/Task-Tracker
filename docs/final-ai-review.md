@@ -7,6 +7,12 @@ This is a condensed, final-project-scoped version of the fuller Module 4/5 evide
 written around Claude Code and Codex App respectively, were both actually done with Claude Code —
 see `AGENTS.md` and `docs/module5/` for why).
 
+**Resubmission note:** the first submission was flagged for a non-standard repo layout (`app/`,
+`frontend/`, `tests/` nested under `task-tracker/backend/` and `task-tracker/frontend/` instead of
+at the repo root). Fixed via `git mv` (history preserved) plus matching updates to
+`.github/workflows/ci.yml` and `Dockerfile`; full detail and re-verified baseline in
+`docs/release-evidence.md`.
+
 ## AGENTS.md guardrails
 
 - Repo-specific stack and commands included: **yes** (Python 3.13/FastAPI/pytest versions, exact
@@ -53,7 +59,9 @@ whenever the status was unchanged. That silently violated the actual documented 
 (same-status transitions must return 422 — see `app/business_rules.py`'s `VALID_TRANSITIONS`,
 which deliberately excludes same→same pairs). It was rejected and replaced with the correct fix on
 the **frontend**: only send `status` in the PATCH payload when the user actually changed it
-(`task-tracker/frontend/index.html`, `editingOriginalStatus` tracking in the modal). The backend
+(`frontend/index.html`, `editingOriginalStatus` tracking in the modal — path was
+`task-tracker/frontend/index.html` at the time, moved to the repo root in the resubmission
+structure fix below). The backend
 rule stayed strict; the bug was actually in what the frontend was sending, not in what the backend
 was rejecting. This is recorded at length in `docs/midcourse/prompt-log.md` because it happened
 more than once before the frontend-side root cause was actually understood and fixed for good.

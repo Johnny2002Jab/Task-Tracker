@@ -1,15 +1,26 @@
 # Release Evidence
 
+## Repository structure fix (resubmission)
+
+Grading feedback on the first submission flagged that `app/`, `frontend/`, and `tests/` lived under
+`task-tracker/backend/` and `task-tracker/frontend/` instead of the required top level. Fixed by
+moving all three (plus `requirements.txt`) to the repo root via `git mv` (history preserved),
+removing the now-redundant `task-tracker/backend/README.md` and `.gitignore` (superseded by the
+root versions), and updating `.github/workflows/ci.yml` (dropped the `working-directory` default)
+and `Dockerfile` (`COPY` paths no longer prefixed with `task-tracker/backend/`). The baseline below
+was re-run after the move, against the new paths, not carried over from the old structure.
+
 ## Baseline
 
 - Branch: `final-project`
-- Date: 2026-07-29
-- Local app run command: `cd task-tracker/backend && venv/Scripts/python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000` (or `uvicorn app.main:app --reload --port 8000` with the venv activated)
-- `/health` result: `HTTP 200`, `{"status":"ok","timestamp":"2026-07-29T17:46:10.454923+00:00"}`
-- Frontend check: served `task-tracker/frontend/index.html` via `python -m http.server 5500`;
-  `HTTP 200` on load; page contains the Kanban board title, "New Task" button, and the create/edit
-  modal form markup (`taskModalForm`) — the board and modal are intact on this branch.
-- Test command: `cd task-tracker/backend && ./venv/Scripts/python.exe -m pytest -v`
+- Date: 2026-08-06 (re-verified after the structure fix above; original baseline was 2026-07-29
+  under the old `task-tracker/backend/` paths)
+- Local app run command: `venv/Scripts/python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000` (or `uvicorn app.main:app --reload --port 8000` with the venv activated), run from the repo root
+- `/health` result: `HTTP 200`, `{"status":"ok","timestamp":"2026-08-06T06:51:36.774436+00:00"}`
+- Frontend check: served `frontend/index.html` via `python -m http.server 5500` from `frontend/`;
+  `HTTP 200` on load; page contains the create/edit modal form markup (`taskModalForm`) — the board
+  and modal are intact on this branch.
+- Test command: `./venv/Scripts/python.exe -m pytest -v`, run from the repo root
 - Test result: **36 passed**, 0 failed (full suite: `test_tasks.py` + `test_midcourse_features.py`)
 
 ## CI evidence
@@ -18,8 +29,8 @@
 - Latest green run on `final-project`:
   https://github.com/Johnny2002Jab/Task-Tracker/actions/runs/30476792079 (commit `642756f`,
   status: success)
-- Test command used by CI: `python -m pytest -v` (run from `task-tracker/backend`, per the
-  workflow's `working-directory` default)
+- Test command used by CI: `python -m pytest -v` (run from the repo root; the workflow no longer
+  sets a `working-directory` default, since `app/`/`tests/` now live at the repo root)
 - Shortcut check: confirmed no `continue-on-error`, no `|| true`, no `--exit-zero`, pytest is not
   skipped or piped through anything that would hide its exit code; Python version is pinned
   (`"3.13"`, not `latest`); triggers cover `push` (all branches) and `pull_request` to `main`.
@@ -38,9 +49,9 @@
 - `/health` check: `curl -i http://localhost:8000/health`
 - Non-root check: `docker exec tt-dev whoami` (expected: `app`)
 - No-baked-secrets check: `.dockerignore` excludes `.env`, `.git`, `venv/`, caches, and build
-  artifacts; the `Dockerfile` only ever `COPY`s `task-tracker/backend/requirements.txt` and
-  `task-tracker/backend/app`, never a broad `COPY . .`, so nothing outside those two paths could
-  end up in the image regardless of `.dockerignore`.
+  artifacts; the `Dockerfile` only ever `COPY`s `requirements.txt` and `app` (both now at the repo
+  root), never a broad `COPY . .`, so nothing outside those two paths could end up in the image
+  regardless of `.dockerignore`.
 
 **Local status: genuinely unavailable, not just unverified.** This dev environment has no Docker
 daemon and no Docker Desktop install at all (`docker --version` → command not found, and

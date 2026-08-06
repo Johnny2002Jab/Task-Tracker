@@ -7,24 +7,23 @@ whenever the code changes underneath it — do not let it drift into a generic F
 
 - Backend: Python 3.13, FastAPI 0.115.0, Pydantic v2 (2.9.2), Uvicorn 0.30.6, python-dotenv 1.0.1.
 - Tests: pytest 9.1.1, httpx 0.28.1 (used via FastAPI's `TestClient`).
-- Frontend: vanilla HTML/CSS/JavaScript in `task-tracker/frontend/index.html`. No framework, no
-  build step.
+- Frontend: vanilla HTML/CSS/JavaScript in `frontend/index.html`. No framework, no build step.
 - Storage: in-memory Python dict (`app/storage.py`). No database. Data is lost on backend restart.
 
 ## Run and test commands
 
-Run from `task-tracker/backend/` with the venv activated (or via `venv/Scripts/python.exe` on
-Windows without activating):
+Run from the repo root with the venv activated (or via `venv/Scripts/python.exe` on Windows
+without activating):
 
 ```
 uvicorn app.main:app --reload --port 8000       # backend, http://localhost:8000
-pytest tests/ -v                                 # full test suite
+python -m pytest -v                              # full test suite
 ```
 
-Frontend: serve `task-tracker/frontend/` with a static file server on port 5500, e.g.:
+Frontend: serve `frontend/` with a static file server on port 5500, e.g.:
 
 ```
-python -m http.server 5500                       # from task-tracker/frontend/
+python -m http.server 5500                       # from frontend/
 ```
 
 Then open `http://localhost:5500/index.html`. The frontend calls the backend at
@@ -33,21 +32,23 @@ Then open `http://localhost:5500/index.html`. The frontend calls the backend at
 ## Architecture
 
 ```
-task-tracker/
-├── backend/
-│   ├── app/
-│   │   ├── main.py            FastAPI app, CORS config, 5 CRUD routes + /health
-│   │   ├── models.py           TaskCreate/TaskUpdate/TaskResponse, TaskStatus/TaskPriority enums
-│   │   ├── storage.py          in-memory _tasks dict + add/get/update/delete/_reset
-│   │   └── business_rules.py   VALID_TRANSITIONS + validate_status_transition
-│   ├── tests/
-│   │   ├── conftest.py         client fixture, created_task fixture, autouse storage reset
-│   │   ├── test_tasks.py       core CRUD + business-rule tests
-│   │   └── test_midcourse_features.py   due-date/overdue and tags tests
-│   └── requirements.txt
-└── frontend/
-    └── index.html              Kanban board, modal, drag-and-drop, filters — all in one file
+app/
+├── main.py            FastAPI app, CORS config, 5 CRUD routes + /health
+├── models.py           TaskCreate/TaskUpdate/TaskResponse, TaskStatus/TaskPriority enums
+├── storage.py           in-memory _tasks dict + add/get/update/delete/_reset
+└── business_rules.py   VALID_TRANSITIONS + validate_status_transition
+tests/
+├── conftest.py         client fixture, created_task fixture, autouse storage reset
+├── test_tasks.py       core CRUD + business-rule tests
+└── test_midcourse_features.py   due-date/overdue and tags tests
+frontend/
+└── index.html          Kanban board, modal, drag-and-drop, filters — all in one file
+requirements.txt
 ```
+
+`app/`, `tests/`, `frontend/`, and `requirements.txt` live at the repo root (moved out of
+`task-tracker/backend/` and `task-tracker/frontend/` after grading feedback flagged the nested
+layout as non-standard — `.github/workflows/ci.yml` and `Dockerfile` were updated to match).
 
 ## Business rules (verify against code before trusting this section)
 
