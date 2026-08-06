@@ -26,9 +26,11 @@ was re-run after the move, against the new paths, not carried over from the old 
 ## CI evidence
 
 - Workflow file: `.github/workflows/ci.yml`
-- Latest green run on `final-project`:
-  https://github.com/Johnny2002Jab/Task-Tracker/actions/runs/30476792079 (commit `642756f`,
-  status: success)
+- Latest green run on `final-project`, after the repository structure fix:
+  https://github.com/Johnny2002Jab/Task-Tracker/actions/runs/31078901336 (commit `82e4803`,
+  status: success — `test` job 14s, `docker` job 19s, both on the new root-level `app`/`tests`
+  layout). Earlier green run on the pre-fix structure, kept for history:
+  https://github.com/Johnny2002Jab/Task-Tracker/actions/runs/30476792079 (commit `642756f`).
 - Test command used by CI: `python -m pytest -v` (run from the repo root; the workflow no longer
   sets a `working-directory` default, since `app/`/`tests/` now live at the repo root)
 - Shortcut check: confirmed no `continue-on-error`, no `|| true`, no `--exit-zero`, pytest is not
@@ -63,10 +65,13 @@ the same build/run/health/whoami sequence was added as a real job (`docker`) in
 preinstalled, so it actually executes there instead of only being authored to the right shape.
 
 - Docker CI job: `.github/workflows/ci.yml`, job `docker` (depends on `test` passing first)
-- Latest run: https://github.com/Johnny2002Jab/Task-Tracker/actions/runs/30908665181 (commit
-  `2e7068b`, branch `final-project`) — **both jobs succeeded**: `test` in 19s, `docker` in 18s. The
-  `docker` job's cleanup step (`docker stop`) is the only one with `continue-on-error`; the build,
-  run, `/health` poll, and non-root check all had to pass for the job itself to report success.
+- Latest run, on the current root-level layout:
+  https://github.com/Johnny2002Jab/Task-Tracker/actions/runs/31078901336 (commit `82e4803`) —
+  **both jobs succeeded**: `test` in 14s, `docker` in 19s. The `docker` job's cleanup step
+  (`docker stop`) is the only one with `continue-on-error`; the build, run, `/health` poll, and
+  non-root check all had to pass for the job itself to report success. First-ever green run of this
+  job (on the pre-restructure layout), kept for history:
+  https://github.com/Johnny2002Jab/Task-Tracker/actions/runs/30908665181 (commit `2e7068b`).
 - What it verifies, on a real container, on every push/PR: image builds, container starts, `/health`
   returns 200 within 15s (polled), `docker exec ... whoami` returns `app` (non-root)
 - This does not replace running it on your own machine before a real release — it proves the image
