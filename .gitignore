@@ -3,5 +3,10 @@
 __pycache__/
 .pytest_cache/
 *.pyc
+*.log
 .DS_Store
 node_modules/
+
+# Obsolete pre-restructure location (app/, tests/, frontend/ moved to repo root);
+# only local venv/.env/cache/log leftovers remain here.
+task-tracker/
