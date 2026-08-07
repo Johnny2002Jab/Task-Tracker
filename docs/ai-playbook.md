@@ -13,7 +13,7 @@
 
 ## When I do not reach for AI first
 
-- Deciding what a business rule *should* be. The same-status PATCH bug happened because a rule got
+- Deciding what a business rule should be. The same-status PATCH bug happened because a rule got
   quietly relaxed instead of the real conflict (frontend always sending `status` vs. the documented
   transition table) being resolved.
 - Anything touching a live credential — retrieving a GitHub token to trigger a CI re-run was a
@@ -46,11 +46,7 @@
   problem" begins — the two can look identical from the outside.
 - Whether a single reviewer doing two structured passes is a real substitute for an independent
   second reviewer — this project's security review used the same agent for both.
-- The Docker build went unverified across three checkpoints before it was resolved, each time
-  honestly flagged rather than glossed over — but three checkpoints is long enough that "flag it
-  honestly" had quietly become a substitute for fixing it. What closed it was noticing GitHub's own
-  CI runners already have Docker, not installing it locally. Lesson: a repeated "still figuring out"
-  item deserves a search for an environment that already has the missing tool, not another flag.
+- The Docker build went unverified across three checkpoints before it was resolved.
 
 ## Decision Card
 

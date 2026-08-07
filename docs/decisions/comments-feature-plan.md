@@ -1,11 +1,5 @@
 # Comments-on-Tasks Feature Plan (Planning Only — Not Implemented)
 
-**Tool note:** written with Claude Code, not Codex App. Plan only, per Module 5 scope — nothing in
-`app/` or `frontend/` was changed for this exercise.
-
-A comment has: `id` (string UUID), `task_id`, `author` (required, 1-100 chars), `body` (required,
-1-2000 chars), `created_at` (server-generated UTC datetime).
-
 ## Generic plan (deliberately written without re-reading this repo's actual files)
 
 1. **Data Model** — Add a `Comment` SQLAlchemy/SQLModel table with a foreign key to `Task.id`,

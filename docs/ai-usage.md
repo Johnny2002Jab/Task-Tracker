@@ -1,8 +1,5 @@
 # AI Usage Rules
 
-Derived from `docs/module5/governance-worksheet.md` — each rule is tied to something that
-actually happened in this project, not a generic policy statement.
-
 ## 1. Never paste
 
 Never share long-lived credentials (OAuth tokens, PATs, API keys, `.env` contents) into a prompt,
@@ -13,15 +10,14 @@ not a routine step.
 
 *Why:* the one High-risk moment in this project's governance worksheet was retrieving a live
 GitHub token to call the Actions API. It was handled carefully (never printed, `unset`
-immediately after), but the right response to noticing that pattern is a rule, not a shrug.
+immediately after), but the right response to noticing that pattern is a rule.
 
 ## 2. Always verify
 
 Before treating any AI-authored change as done: run it, don't just read it. For backend logic,
 that means running the actual test suite (not just skimming the diff); for CI/CD changes, that
 means pushing and checking the real run result, not assuming the YAML "looks right"; for anything
-that can't be run in the current environment (e.g. Docker with no daemon available), say so
-explicitly instead of describing it as verified.
+that can't be run in the current environment.
 
 *Why:* this project's CI workflow looked correct and still failed twice for a real reason (bare
 `pytest` vs `python -m pytest`) that only showed up by actually pushing and reading the run

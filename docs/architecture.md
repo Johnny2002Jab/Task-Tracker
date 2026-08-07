@@ -1,16 +1,10 @@
 # Task Tracker — Architecture
 
-Built by combining the strongest parts of three context-engineering strategies run against the
-same task (see `docs/module5/architecture-A.md`, `-B.md`, `-C.md` for the raw outputs and
-`docs/module5/context-engineering-comparison.md` for the comparison log this document is based
-on). This version favors Strategy C's file-level precision, filled in with Strategy B's
-system-level framing where C had no visibility (frontend, tests, CI).
-
 ## System overview
 
 A FastAPI Task Tracker backend (in-memory storage, no database) paired with a single-file vanilla
 JS/HTML/CSS Kanban frontend (`frontend/index.html`). No authentication, no
-persistence beyond process lifetime — see `docs/decisions/in-memory-task-storage.md` for why.
+persistence beyond process lifetime.
 
 ## Backend structure
 
@@ -44,13 +38,12 @@ JSON response, including the computed `is_overdue` field.
 `tests/conftest.py` (client + `created_task` fixtures, autouse storage reset),
 `tests/test_tasks.py` (core CRUD + business rules), `tests/test_midcourse_features.py`
 (due-date/overdue + tags). CI (`.github/workflows/ci.yml`) runs `python -m pytest -v` on push/PR —
-note the `python -m` is load-bearing, not stylistic; see `docs/module4/claim-vs-reality.md`.
+note the `python -m` is load-bearing, not stylistic.
 
 ## Known limits
 
 No database (in-memory only, data lost on restart), no auth, `description`/`assignee` are
-unbounded strings (see `docs/module5/security-review.md`), Docker image is authored but not
-build/run-verified in this environment.
+unbounded strings.
 
 ## Context-strategy verdict
 

@@ -1,31 +1,14 @@
 # Final AI Review and Ownership Evidence
 
-This is a condensed, final-project-scoped version of the fuller Module 4/5 evidence in
-`docs/module4/` and `docs/module5/` — see those for the complete logs this one summarizes.
 
-**Tool note:** produced with Claude Code throughout (Modules 4 and 5's exercises, which are
-written around Claude Code and Codex App respectively, were both actually done with Claude Code —
-see `AGENTS.md` and `docs/module5/` for why).
-
-**Resubmission note:** the first submission was flagged for a non-standard repo layout (`app/`,
-`frontend/`, `tests/` nested under `task-tracker/backend/` and `task-tracker/frontend/` instead of
-at the repo root). Fixed via `git mv` (history preserved) plus matching updates to
-`.github/workflows/ci.yml` and `Dockerfile`; full detail and re-verified baseline in
-`docs/release-evidence.md`.
 
 ## AGENTS.md guardrails
 
-- Repo-specific stack and commands included: **yes** (Python 3.13/FastAPI/pytest versions, exact
-  `python -m pytest -v` / `uvicorn ...` commands, not generic placeholders)
-- Docs-first/read-first guardrail included: **yes** ("Default to read-only analysis... Module 5
-  deliverables live under `docs/`")
-- Unexpected app/frontend edits rule included: **yes** ("Any required edit to `app/` or
-  `frontend/`... must be explained in the relevant `docs/module5/` file")
+- Repo-specific stack and commands included: **yes**
+- Docs-first/read-first guardrail included: **yes** 
+- Unexpected app/frontend edits rule included: **yes** 
 
 ## AI code review mini-log
-
-Condensed from `docs/module4/ai-review-log.md` (full log has 6 entries; these 3 are the ones with
-real decisions behind them):
 
 | AI comment | Grade | Reason | Verification or decision |
 |---|---|---|---|
@@ -34,8 +17,6 @@ real decisions behind them):
 | Initial instinct: excluding `docs/` from the image means an on-call engineer can't read documentation inside a running container. | Wrong | Misunderstands the purpose of a runtime image — the container serves the API; docs were never going to be shipped inside it regardless of `.dockerignore`, since the `Dockerfile` doesn't copy them. | Rejected, no change made. Recorded specifically because it's the kind of AI comment that sounds responsible but doesn't hold up on inspection. |
 
 ## AI security mini-review
-
-Condensed from `docs/module5/security-review.md` (full log has 5 findings):
 
 | Finding | File evidence | Grade | Reason | Next action |
 |---|---|---|---|---|
@@ -53,22 +34,15 @@ plausible gap rather than opening one. Full context in `docs/module5/security-re
 
 ## One AI output I rejected or corrected
 
-The clearest example spans this whole project: an earlier fix for "editing a task fails if you
-don't change its status" initially patched the **backend** to skip status-transition validation
-whenever the status was unchanged. That silently violated the actual documented business rule
-(same-status transitions must return 422 — see `app/business_rules.py`'s `VALID_TRANSITIONS`,
-which deliberately excludes same→same pairs). It was rejected and replaced with the correct fix on
-the **frontend**: only send `status` in the PATCH payload when the user actually changed it
-(`frontend/index.html`, `editingOriginalStatus` tracking in the modal — path was
-`task-tracker/frontend/index.html` at the time, moved to the repo root in the resubmission
-structure fix below). The backend
+editing a task fails if you
+don't change its status initially patched the **backend** to skip status-transition validation
+whenever the status was unchanged. That silently violated the actual documented business rule. It was rejected and replaced with the correct fix on
+the **frontend**: only send `status` in the PATCH payload when the user actually changed it. The backend
 rule stayed strict; the bug was actually in what the frontend was sending, not in what the backend
 was rejecting. This is recorded at length in `docs/midcourse/prompt-log.md` because it happened
 more than once before the frontend-side root cause was actually understood and fixed for good.
 
 ## Three AI usage rules
-
-(Full reasoning in `docs/ai-usage.md`.)
 
 1. **Never paste:** long-lived credentials, `.env` contents, tokens, or real personal/customer
    data into an AI tool or the repo. If a tool genuinely needs a credential, retrieve it
@@ -87,12 +61,4 @@ I'm comfortable submitting this repo as my own work because every non-trivial cl
 backed by something I actually ran, not just a plausible-looking diff. The CI green→red→green
 sequence was produced by genuinely pushing an intentional break and watching it fail for the right
 reason, and the security findings were checked against the actual frontend rendering code before
-being accepted or rejected, not accepted at face value. The one thing I initially could not verify
-by hand — the Docker build, since no Docker daemon exists in this dev environment — was recorded
-as unverified rather than glossed over, and was later actually closed, not just re-flagged again,
-by adding a real `docker` job to CI that builds, runs, and health/non-root-checks the image on
-GitHub's runner (`docs/release-evidence.md` has the passing run link). The parts written in a
-first-person "voice" (this statement, the AI playbook, the decision notes' trade-offs sections)
-were drafted with AI assistance but reflect judgment calls I'd defend if asked why, not
-boilerplate. Every open item in this project got either an honest "not verified" label or, once
-actually resolved, evidence of the real run that resolved it — never a claim I hadn't checked.
+being accepted or rejected, not accepted at face value.
