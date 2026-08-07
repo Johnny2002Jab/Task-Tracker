@@ -84,13 +84,15 @@ more than once before the frontend-side root cause was actually understood and f
 ## Ownership statement
 
 I'm comfortable submitting this repo as my own work because every non-trivial claim in it is
-backed by something I actually ran: the CI green→red→green sequence was produced by genuinely
-pushing an intentional break and watching it fail for the right reason, not by writing a workflow
-file and assuming it works; the security findings were checked against the actual frontend
-rendering code before being accepted or rejected, not accepted at face value; and the one thing I
-could *not* verify — the Docker build — is stated as unverified in three separate places
-(`docs/release-evidence.md`, `docs/module4/claim-vs-reality.md`, this file) rather than glossed
-over. The parts written in a first-person "voice" (this statement, the AI playbook, the decision
-notes' trade-offs sections) were drafted with AI assistance but reflect judgment calls I'd defend
-if asked why, not boilerplate — and where I couldn't independently verify something (Docker), I
-said so instead of claiming otherwise.
+backed by something I actually ran, not just a plausible-looking diff. The CI green→red→green
+sequence was produced by genuinely pushing an intentional break and watching it fail for the right
+reason, and the security findings were checked against the actual frontend rendering code before
+being accepted or rejected, not accepted at face value. The one thing I initially could not verify
+by hand — the Docker build, since no Docker daemon exists in this dev environment — was recorded
+as unverified rather than glossed over, and was later actually closed, not just re-flagged again,
+by adding a real `docker` job to CI that builds, runs, and health/non-root-checks the image on
+GitHub's runner (`docs/release-evidence.md` has the passing run link). The parts written in a
+first-person "voice" (this statement, the AI playbook, the decision notes' trade-offs sections)
+were drafted with AI assistance but reflect judgment calls I'd defend if asked why, not
+boilerplate. Every open item in this project got either an honest "not verified" label or, once
+actually resolved, evidence of the real run that resolved it — never a claim I hadn't checked.
