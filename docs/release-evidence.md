@@ -18,8 +18,8 @@ was re-run after the move, against the new paths, not carried over from the old 
 - Local app run command: `venv/Scripts/python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000` (or `uvicorn app.main:app --reload --port 8000` with the venv activated), run from the repo root
 - `/health` result: `HTTP 200`, `{"status":"ok","timestamp":"2026-08-06T06:51:36.774436+00:00"}`
 - Frontend check: served `frontend/index.html` via `python -m http.server 5500` from `frontend/`;
-  `HTTP 200` on load; page contains the create/edit modal form markup (`taskModalForm`) — the board
-  and modal are intact on this branch.
+  `HTTP 200` on load; page contains the "New Task" button and the create/edit modal form markup
+  (`taskModalForm`) — the Kanban board and create/edit flow are still visible on this branch.
 - Test command: `./venv/Scripts/python.exe -m pytest -v`, run from the repo root
 - Test result: **36 passed**, 0 failed (full suite: `test_tasks.py` + `test_midcourse_features.py`)
 

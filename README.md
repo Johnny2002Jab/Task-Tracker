@@ -57,12 +57,16 @@ docker stop tt-dev
 ### AI assistance summary
 
 AI helped draft or review: the due-dates/tags features, CI workflow, Dockerfile, docstrings,
-README, security review, governance worksheet, and technical decision notes.
+README, security review, governance worksheet, technical decision notes, the CI-based Docker
+build/run/health job, and the repo structure fix (`task-tracker/backend/` → repo root).
 
 I verified the work by: running the full pytest suite (36/36) before and after each change,
 curl-testing every documented API claim against a running backend, and pushing the CI workflow
 to actually watch it pass, fail on an intentional break, and pass again — not by reading the YAML
-and assuming it was correct.
+and assuming it was correct. After the structure fix, re-ran the same checks (pytest, `/health`,
+frontend serve) from the new root paths rather than assuming the move didn't break anything, and
+watched two full CI runs (`test` + `docker` jobs) go green on the new layout before considering it
+done.
 
 One AI suggestion I rejected or corrected: an early backend-only fix for a status-transition bug
 silently weakened a documented business rule; it was replaced with a frontend-side fix that kept
